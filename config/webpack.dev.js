@@ -5,6 +5,7 @@ const {merge} = require('webpack-merge');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
+    entry: [paths.src + '/index.js'],
     // Set the mode to development or production
     // Установка режима разработки или продакшна
     mode: 'development',

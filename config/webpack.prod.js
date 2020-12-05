@@ -13,7 +13,7 @@ module.exports = merge(common, {
     output: {
         path: paths.build,
         publicPath: './',
-        filename: 'js/[name].js',
+        filename: '[name].js',
     },
     plugins: [
         // Extracts CSS into separate files
@@ -21,7 +21,7 @@ module.exports = merge(common, {
         // Извлекать CSS в отдельные файлы
         // Обратите внимание, что style-loader предназначен для разработки, а MiniCssExtractPlugin - для продакшна
         new MiniCssExtractPlugin({
-            filename: 'styles/[name].css',
+            filename: '[name].css',
             chunkFilename: '[id].css',
         }),
     ],

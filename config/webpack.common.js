@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     // Where webpack looks to start building the bundle
     // Откуда начинается сборка
-    entry: [paths.src + '/index.js'],
+    entry: [],
 
     // Where webpack outputs the assets and bundles
     // Куда помещаются файлы сборки

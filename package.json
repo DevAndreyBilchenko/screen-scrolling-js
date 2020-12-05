@@ -2,7 +2,7 @@
   "name": "screen-scrolling-js",
   "version": "0.0.1",
   "description": "Scrolling page screen by screen",
-  "main": "dist/screen-scrolling-js.js",
+  "main": "dist/main.js",
   "scripts": {
     "prepare": "npm run build",
     "build": "cross-env NODE_ENV=production webpack --config config/webpack.prod.js",
