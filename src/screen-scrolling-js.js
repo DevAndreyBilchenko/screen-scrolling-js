@@ -7,6 +7,8 @@ const defaultConf = {
     current_screen: 1,
     scroll_duration: 600,
     disableOn: 768,
+    onScreenEnable: function () {},
+    onScreenDisable: function () {}
 };
 
 export default class ScreenScrollingJs {
@@ -16,6 +18,7 @@ export default class ScreenScrollingJs {
         this.state = {
             sliding: false,
             currentScreen: this.conf.current_screen,
+            prevScreen: null,
             slide_from: 0,
             slide_to: 0,
             slide_current: 0,
@@ -112,6 +115,7 @@ export default class ScreenScrollingJs {
         if (this.state.sliding) return;
         if (number === this.state.currentScreen || number < 1 || number > this.dom.child.length) return;
 
+        this.state.prevScreen = this.state.currentScreen;
         this.state.currentScreen = number;
         this.state.slide_to = window.innerHeight * (number - 1);
     }
@@ -142,7 +146,7 @@ export default class ScreenScrollingJs {
     }
 
     onNavButtonClick(e) {
-        this.showScreen(e.target.dataset.screen);
+        this.showScreen(parseInt(e.target.dataset.screen));
     }
 
     isTouch() {
@@ -162,10 +166,15 @@ export default class ScreenScrollingJs {
         window.requestAnimationFrame(time => {
             (() => {
                 if (this.state.slide_current === this.state.slide_to) {
+                    if (this.state.sliding) {
+                        this.conf.onScreenDisable(this.state.prevScreen);
+                        this.conf.onScreenEnable(this.state.currentScreen);
+                    }
                     this.state.sliding = false;
                     this.state.slide_from = this.state.slide_to;
                     return;
                 }
+
                 if (this.state.slide_from === this.state.slide_current) {
                     this.state.time_start = time;
                     this.state.slide_current++;
