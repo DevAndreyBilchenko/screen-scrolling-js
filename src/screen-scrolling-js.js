@@ -29,6 +29,8 @@ export default class ScreenScrollingJs {
         this.queryDom();
         this.setupDom();
         this.setupEvents();
+        this.updateNav();
+        this.updateSections();
         this.loop();
     }
 
@@ -110,7 +112,6 @@ export default class ScreenScrollingJs {
         this.yDown = null;
     }
 
-
     showScreen(number) {
         if (this.state.sliding) return;
         if (number === this.state.currentScreen || number < 1 || number > this.dom.child.length) return;
@@ -169,6 +170,8 @@ export default class ScreenScrollingJs {
                     if (this.state.sliding) {
                         this.conf.onScreenDisable(this.state.prevScreen);
                         this.conf.onScreenEnable(this.state.currentScreen);
+                        this.updateNav();
+                        this.updateSections();
                     }
                     this.state.sliding = false;
                     this.state.slide_from = this.state.slide_to;
@@ -204,6 +207,27 @@ export default class ScreenScrollingJs {
             top: 0,
             left: 0,
             behavior: 'instant',
+        });
+    }
+
+    updateNav() {
+        this.dom.buttons.forEach(button => {
+           button.classList.remove(this.conf.nav_active_state)
+        });
+
+        this.dom.nav.forEach(nav => {
+            nav.querySelector(`[data-screen="${this.state.currentScreen}"]`).classList.add(this.conf.nav_active_state);
+        });
+    }
+
+    updateSections() {
+        this.dom.child.forEach((child, n) => {
+           child.classList.remove(this.conf.screen_active_state);
+
+           if (n === this.state.currentScreen - 1) {
+               console.log(n)
+               child.classList.add(this.conf.screen_active_state);
+           }
         });
     }
 }
