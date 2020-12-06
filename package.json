@@ -1,6 +1,6 @@
 {
   "name": "screen-scrolling-js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Scrolling page screen by screen",
   "main": "dist/screen-scrolling-js.js",
   "module": "src/screen-scrolling-js.js",

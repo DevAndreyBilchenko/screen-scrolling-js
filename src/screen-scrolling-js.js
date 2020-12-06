@@ -225,7 +225,6 @@ export default class ScreenScrollingJs {
            child.classList.remove(this.conf.screen_active_state);
 
            if (n === this.state.currentScreen - 1) {
-               console.log(n)
                child.classList.add(this.conf.screen_active_state);
            }
         });
