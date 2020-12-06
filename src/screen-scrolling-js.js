@@ -48,6 +48,8 @@ export default class ScreenScrollingJs {
     setupDom() {
         if (this.dom.root.nodeName === 'BODY') throw new Error('Body cannot by root element');
 
+        this.instantTop();
+
         window.requestAnimationFrame(() => {
             this.dom.root.style.willChange = 'transform';
             this.dom.root.style.height = (window.innerHeight * this.dom.child.length) + 'px';
@@ -123,7 +125,7 @@ export default class ScreenScrollingJs {
     }
 
     onScroll(e) {
-        window.scrollTo(0, 0);
+        this.instantTop();
         e.preventDefault();
     }
 
@@ -185,6 +187,14 @@ export default class ScreenScrollingJs {
             })();
 
             this.loop();
+        });
+    }
+
+    instantTop() {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'instant',
         });
     }
 }
