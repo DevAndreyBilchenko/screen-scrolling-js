@@ -7,8 +7,11 @@ const defaultConf = {
     current_screen: 1,
     scroll_duration: 600,
     disableOn: 768,
-    onScreenEnable: function () {},
-    onScreenDisable: function () {}
+    swipeDistance: 90,
+    onScreenEnable: function () {
+    },
+    onScreenDisable: function () {
+    },
 };
 
 export default class ScreenScrollingJs {
@@ -75,6 +78,8 @@ export default class ScreenScrollingJs {
         window.addEventListener('wheel', this.onWheel.bind(this), false);
         document.addEventListener('touchstart', this.handleTouchStart.bind(this), false);
         document.addEventListener('touchmove', this.handleTouchMove.bind(this), false);
+        document.addEventListener('touchend', this.handleTouchEnd.bind(this), false);
+        document.addEventListener('touchcancel', this.handleTouchEnd.bind(this), false);
 
         this.dom.buttons.forEach(node => {
             node.addEventListener('click', this.onNavButtonClick.bind(this));
@@ -82,12 +87,22 @@ export default class ScreenScrollingJs {
     }
 
     handleTouchStart(evt) {
+        if (this.state.ignoreInput) return;
+
         const firstTouch = evt.touches[0];
         this.xDown = firstTouch.clientX;
         this.yDown = firstTouch.clientY;
+
+        console.log('touchstart', this.yDown);
     }
 
     handleTouchMove(evt) {
+        if (this.state.ignoreInput) return;
+
+        if (this.yDown === null) {
+            this.handleTouchStart(evt);
+        }
+
         let xUp = evt.touches[0].clientX;
         let yUp = evt.touches[0].clientY;
 
@@ -101,21 +116,32 @@ export default class ScreenScrollingJs {
                 /* right swipe */
             }
         } else {
-            if (yDiff > 0) {
+            if (yDiff > this.conf.swipeDistance) {
                 this.showNextScreen();
-            } else {
+                this.updateTouchForward(xUp, yUp);
+            } else if (yDiff < -this.conf.swipeDistance) {
                 this.showPrevScreen();
+                this.updateTouchForward(xUp, yUp);
             }
         }
+    }
+
+    handleTouchEnd() {
         /* reset values */
         this.xDown = null;
         this.yDown = null;
+    }
+
+    updateTouchForward(x, y) {
+        this.xDown = x;
+        this.yDown = y;
     }
 
     showScreen(number) {
         if (this.state.sliding) return;
         if (number === this.state.currentScreen || number < 1 || number > this.dom.child.length) return;
 
+        this.state.sliding = true;
         this.state.prevScreen = this.state.currentScreen;
         this.state.currentScreen = number;
         this.state.slide_to = window.innerHeight * (number - 1);
@@ -139,6 +165,8 @@ export default class ScreenScrollingJs {
     }
 
     onWheel(e) {
+        if (this.state.ignoreInput) return;
+
         if (e.deltaY > 0) {
             this.showNextScreen();
         } else {
@@ -163,6 +191,13 @@ export default class ScreenScrollingJs {
         return (1 - amt) * start + amt * end;
     }
 
+    ignoreInput() {
+        this.state.ignoreInput = true;
+        setTimeout(() => {
+            this.state.ignoreInput = false;
+        }, 300);
+    }
+
     loop() {
         window.requestAnimationFrame(time => {
             (() => {
@@ -172,6 +207,7 @@ export default class ScreenScrollingJs {
                         this.conf.onScreenEnable(this.state.currentScreen);
                         this.updateNav();
                         this.updateSections();
+                        this.ignoreInput();
                     }
                     this.state.sliding = false;
                     this.state.slide_from = this.state.slide_to;
@@ -212,7 +248,7 @@ export default class ScreenScrollingJs {
 
     updateNav() {
         this.dom.buttons.forEach(button => {
-           button.classList.remove(this.conf.nav_active_state)
+            button.classList.remove(this.conf.nav_active_state);
         });
 
         this.dom.nav.forEach(nav => {
@@ -222,11 +258,11 @@ export default class ScreenScrollingJs {
 
     updateSections() {
         this.dom.child.forEach((child, n) => {
-           child.classList.remove(this.conf.screen_active_state);
+            child.classList.remove(this.conf.screen_active_state);
 
-           if (n === this.state.currentScreen - 1) {
-               child.classList.add(this.conf.screen_active_state);
-           }
+            if (n === this.state.currentScreen - 1) {
+                child.classList.add(this.conf.screen_active_state);
+            }
         });
     }
 }
